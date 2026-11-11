@@ -2,6 +2,8 @@ package com.vvd.domain.activity.service.trial.factory;
 
 import com.vvd.domain.activity.model.entity.MarketProductEntity;
 import com.vvd.domain.activity.model.entity.TrialBalanceEntity;
+import com.vvd.domain.activity.model.valobj.GroupBuyActivityDiscountVO;
+import com.vvd.domain.activity.model.valobj.SkuVO;
 import com.vvd.types.design.framework.tree.StrategyHandler;
 import com.vvd.domain.activity.service.trial.node.RootNode;
 import javax.annotation.Resource;
@@ -18,7 +20,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class DefaultActivityStrategyFactory {
-    
+
     private final RootNode rootNode;
 
     public DefaultActivityStrategyFactory(RootNode rootNode) {
@@ -34,6 +36,11 @@ public class DefaultActivityStrategyFactory {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class DynamicContext {
+
+        // 拼团活动营销配置值对象
+        private GroupBuyActivityDiscountVO groupBuyActivityDiscountVO;
+        // 商品信息
+        private SkuVO skuVO;
 
     }
 

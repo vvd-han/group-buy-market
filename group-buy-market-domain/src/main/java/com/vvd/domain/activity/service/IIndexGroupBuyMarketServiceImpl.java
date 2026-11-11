@@ -7,12 +7,14 @@ import com.vvd.domain.activity.service.trial.factory.DefaultActivityStrategyFact
 import com.vvd.types.design.framework.tree.StrategyHandler;
 import javax.annotation.Resource;
 import lombok.val;
+import org.springframework.stereotype.Service;
 
 /**
  * @author hanjiazhi
  * @description
  * @create 2026/11/3 17:29
  */
+@Service
 public class IIndexGroupBuyMarketServiceImpl implements IIndexGroupBuyMarketService {
 
     @Resource
