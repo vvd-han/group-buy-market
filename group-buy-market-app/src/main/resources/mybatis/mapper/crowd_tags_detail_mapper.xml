@@ -11,9 +11,17 @@
         <result column="update_time" property="updateTime"/>
     </resultMap>
 
-    <insert id="addCrowdTagsUserId" parameterType="com.vvd.infrastructure.dao.po.CrowdTagsDetail">
-        insert into crowd_tags_detail(tag_id, user_id, create_time, update_time)
-        values (#{tagId}, #{userId}, now(), now())
+    <insert id="addCrowdTagsUsers">
+        insert into crowd_tags_detail(tag_id, user_id)
+        values
+        <foreach collection="userIds" item="userId" separator=",">
+            (#{tagId}, #{userId})
+        </foreach>
+        on duplicate key update user_id = crowd_tags_detail.user_id
     </insert>
+
+    <select id="containsUser" timeout="2" resultType="boolean">
+        select exists(select 1 from crowd_tags_detail where tag_id = #{tagId} and user_id = #{userId})
+    </select>
 
 </mapper>

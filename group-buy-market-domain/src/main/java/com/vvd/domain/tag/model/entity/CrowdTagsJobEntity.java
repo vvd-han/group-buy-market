@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.fenum.qual.SwingElementOrientation;
 
 /**
  * @author hanjiazhi
@@ -35,6 +33,8 @@ public class CrowdTagsJobEntity {
      * 统计数据，结束时间
      */
     private Date statEndTime;
+
+    private Integer status;
 
 }
 

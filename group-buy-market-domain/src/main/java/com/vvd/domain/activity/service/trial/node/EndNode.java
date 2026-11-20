@@ -5,13 +5,12 @@ import com.vvd.domain.activity.model.entity.TrialBalanceEntity;
 import com.vvd.domain.activity.model.valobj.GroupBuyActivityDiscountVO;
 import com.vvd.domain.activity.model.valobj.SkuVO;
 import com.vvd.domain.activity.service.trial.AbstractGroupBuyMarketSupport;
-import com.vvd.domain.activity.service.trial.factory.DefaultActivityStrategyFactory;
 import com.vvd.domain.activity.service.trial.factory.DefaultActivityStrategyFactory.DynamicContext;
 import com.vvd.types.design.framework.tree.StrategyHandler;
+import com.vvd.types.enums.ResponseCode;
+import com.vvd.types.exception.AppException;
 import java.math.BigDecimal;
-import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import org.springframework.stereotype.Service;
 
 /**
@@ -27,12 +26,17 @@ public class EndNode extends
     @Override
     public TrialBalanceEntity doApply(MarketProductEntity requestParameter, DynamicContext dynamicContext)
         throws Exception {
+        if (!dynamicContext.isVisible()) {
+            return TrialBalanceEntity.builder().isVisible(false).isEnable(false).build();
+        }
         GroupBuyActivityDiscountVO groupBuyActivityDiscountVO = dynamicContext.getGroupBuyActivityDiscountVO();
         SkuVO skuVO = dynamicContext.getSkuVO();
 
         BigDecimal deductionPrice = dynamicContext.getDeductionPrice();
 
-        // 返回空结果
+        if (deductionPrice == null) {
+            throw new AppException(ResponseCode.E0005.getCode(), ResponseCode.E0005.getInfo());
+        }
         return TrialBalanceEntity.builder()
             .goodsId(skuVO.getGoodsId())
             .goodsName(skuVO.getGoodsName())

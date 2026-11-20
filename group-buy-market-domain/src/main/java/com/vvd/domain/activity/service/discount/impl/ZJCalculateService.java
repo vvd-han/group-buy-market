@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * @author hanjiazhi
- * @description 直减
+ * @description 直减：表达式为直减金额，必须为非负数
  * @create 2026/11/16 21:43
  */
 @Slf4j
@@ -17,14 +17,9 @@ public class ZJCalculateService extends AbstractDiscountCalculateService {
 
     @Override
     protected BigDecimal doCalculate(BigDecimal originalPrice, GroupBuyDiscount groupBuyDiscount) {
-        String marketExpr = groupBuyDiscount.getMarketExpr();
-
-        BigDecimal deductionPrice = originalPrice.subtract(new BigDecimal(marketExpr));
-
-        if (deductionPrice.compareTo(BigDecimal.ZERO) <= 0) {
-            return new BigDecimal("0.01");
-        }
-        return deductionPrice;
+        BigDecimal reduce = parseNonNegative(groupBuyDiscount.getMarketExpr());
+        // 最低价兜底由模板统一处理
+        return originalPrice.subtract(reduce);
     }
 
 }

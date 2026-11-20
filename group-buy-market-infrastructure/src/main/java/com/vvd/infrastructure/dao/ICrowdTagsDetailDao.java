@@ -1,7 +1,8 @@
 package com.vvd.infrastructure.dao;
 
-import com.vvd.infrastructure.dao.po.CrowdTagsDetail;
+import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * @author hanjiazhi
@@ -11,6 +12,8 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface ICrowdTagsDetailDao {
 
-    void addCrowdTagsUserId(CrowdTagsDetail crowdTagsDetailReq);
+    void addCrowdTagsUsers(@Param("tagId") String tagId, @Param("userIds") List<String> userIds);
+
+    boolean containsUser(@Param("tagId") String tagId, @Param("userId") String userId);
 
 }

@@ -21,7 +21,7 @@
         from group_buy_discount
     </select>
 
-    <select id="queryGroupBuyActivityDiscountByDiscountId" parameterType="java.lang.String"
+    <select id="queryGroupBuyActivityDiscountByDiscountId" timeout="2" parameterType="java.lang.String"
         resultMap="dataMap">
         select discount_id,
                discount_name,

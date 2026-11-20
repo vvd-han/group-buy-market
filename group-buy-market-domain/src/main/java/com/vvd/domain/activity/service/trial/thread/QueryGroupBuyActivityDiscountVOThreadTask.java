@@ -4,7 +4,6 @@ import com.vvd.domain.activity.adapter.repository.IActivityRepository;
 import com.vvd.domain.activity.model.valobj.GroupBuyActivityDiscountVO;
 import com.vvd.domain.activity.model.valobj.SCSkuActivityVO;
 import java.util.concurrent.Callable;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author hanjiazhi

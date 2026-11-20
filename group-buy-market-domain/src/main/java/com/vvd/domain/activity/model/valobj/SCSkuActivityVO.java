@@ -17,13 +17,13 @@ import lombok.NoArgsConstructor;
 public class SCSkuActivityVO {
 
     /**
-     * 渠道
+     * 来源
      */
     private String source;
     /**
-     * 来源
+     * 渠道
      */
-    private String chanel;
+    private String channel;
     /**
      * 活动ID
      */

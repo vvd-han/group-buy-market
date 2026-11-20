@@ -1,6 +1,8 @@
 package com.vvd.domain.activity.model.valobj;
 
 
+import com.vvd.types.enums.ResponseCode;
+import com.vvd.types.exception.AppException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,14 +20,13 @@ public enum DiscountTypeEnum {
     private String info;
 
     public static DiscountTypeEnum get(Integer code) {
-        switch (code) {
-            case 0:
-                return BASE;
-            case 1:
-                return TAG;
-            default:
-                throw new RuntimeException("err code!");
+        if (BASE.code.equals(code)) {
+            return BASE;
         }
+        if (TAG.code.equals(code)) {
+            return TAG;
+        }
+        throw new AppException(ResponseCode.E0004.getCode(), ResponseCode.E0004.getInfo());
     }
 
 }

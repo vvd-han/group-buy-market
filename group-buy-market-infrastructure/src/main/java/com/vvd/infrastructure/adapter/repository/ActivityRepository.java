@@ -5,6 +5,7 @@ import com.vvd.domain.activity.model.valobj.DiscountTypeEnum;
 import com.vvd.domain.activity.model.valobj.GroupBuyActivityDiscountVO;
 import com.vvd.domain.activity.model.valobj.SCSkuActivityVO;
 import com.vvd.domain.activity.model.valobj.SkuVO;
+import com.vvd.infrastructure.dao.ICrowdTagsDetailDao;
 import com.vvd.infrastructure.dao.IGroupBuyActivityDao;
 import com.vvd.infrastructure.dao.IGroupBuyDiscountDao;
 import com.vvd.infrastructure.dao.ISCSkuActivityDao;
@@ -13,9 +14,7 @@ import com.vvd.infrastructure.dao.po.GroupBuyActivity;
 import com.vvd.infrastructure.dao.po.GroupBuyDiscount;
 import com.vvd.infrastructure.dao.po.SCSkuActivity;
 import com.vvd.infrastructure.dao.po.Sku;
-import com.vvd.infrastructure.redis.IRedisService;
 import javax.annotation.Resource;
-import org.redisson.api.RBitSet;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -39,7 +38,7 @@ public class ActivityRepository implements IActivityRepository {
     private ISCSkuActivityDao skuActivityDao;
 
     @Resource
-    private IRedisService redisService;
+    private ICrowdTagsDetailDao crowdTagsDetailDao;
 
     @Override
     public GroupBuyActivityDiscountVO queryGroupBuyActivityDiscountVO(Long activityId) {
@@ -82,8 +81,9 @@ public class ActivityRepository implements IActivityRepository {
     }
 
     @Override
-    public SkuVO querySkuByGoodsId(String goodsId) {
-        Sku sku = skuDao.querySkuByGoodsId(goodsId);
+    public SkuVO querySkuBySCGoodsId(String source, String channel, String goodsId) {
+        Sku request = Sku.builder().source(source).channel(channel).goodsId(goodsId).build();
+        Sku sku = skuDao.querySkuBySCGoodsId(request);
         if (null == sku) {
             return null;
         }
@@ -108,7 +108,7 @@ public class ActivityRepository implements IActivityRepository {
 
         return SCSkuActivityVO.builder()
             .source(scSkuActivity.getSource())
-            .chanel(scSkuActivity.getChannel())
+            .channel(scSkuActivity.getChannel())
             .activityId(scSkuActivity.getActivityId())
             .goodsId(scSkuActivity.getGoodsId())
             .build();
@@ -116,13 +116,7 @@ public class ActivityRepository implements IActivityRepository {
 
     @Override
     public boolean isTagCrowdRange(String tagId, String userId) {
-        RBitSet bitSet = redisService.getBitSet(tagId);
-        if (!bitSet.isExists()) {
-            // 人群标签数据不存在，则用户不在人群范围内
-            return false;
-        }
-        // 判断用户是否存在人群中
-        return bitSet.get(redisService.getIndexFromUserId(userId));
+        return crowdTagsDetailDao.containsUser(tagId, userId);
     }
 
 }

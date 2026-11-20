@@ -9,6 +9,10 @@
 
     <artifactId>group-buy-market-app</artifactId>
 
+    <properties>
+        <skipTests>true</skipTests>
+    </properties>
+
     <packaging>jar</packaging>
 
     <dependencies>
@@ -116,7 +120,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
-                    <skipTests>true</skipTests>
+                    <skipTests>${skipTests}</skipTests>
                     <testFailureIgnore>false</testFailureIgnore>
                     <includes>
                         <include>**/*Test.java</include>

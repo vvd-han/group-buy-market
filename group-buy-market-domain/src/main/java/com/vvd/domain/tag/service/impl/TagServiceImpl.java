@@ -3,44 +3,62 @@ package com.vvd.domain.tag.service.impl;
 import com.vvd.domain.tag.adapter.repository.ITagRepository;
 import com.vvd.domain.tag.model.entity.CrowdTagsJobEntity;
 import com.vvd.domain.tag.service.ITagService;
+import com.vvd.types.common.Constants;
+import com.vvd.types.enums.ResponseCode;
+import com.vvd.types.exception.AppException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Resource;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-/**
- * @author hanjiazhi
- * @description
- * @create 2026/11/18 22:17
- */
-@Slf4j
 @Service
 public class TagServiceImpl implements ITagService {
+
+    private static final Integer MANUAL_MEMBERSHIP = 2;
+    private static final Integer READY = 1;
+    private static final Integer COMPLETED = 3;
 
     @Resource
     private ITagRepository repository;
 
     @Override
+    @Transactional
     public void execTagBatchJob(String tagId, String batchId) {
-        // 1. 查询任务
-        CrowdTagsJobEntity crowdTagsJobEntity = repository.queryCrowdTagsJobEntity(tagId, batchId);
-
-        // 2. 采集用户数据 - 这部分需要采集用户的消费类数据，后续有用户发起拼单后再处理。
-
-        // 3. 数据写入记录
-        List<String> userIdList = new ArrayList<String>() {{
-            add("xiaofuge");
-            add("liergou");
-        }};
-
-        // 4. 一般人群标签的处理在公司中，会有专门的数据数仓团队通过脚本方式写入到数据库，就不用这样一个个或者批次来写。
-        for (String userId : userIdList) {
-            repository.addCrowdTagsUserId(tagId, userId);
+        if (StringUtils.isAnyBlank(tagId, batchId)) {
+            throw new AppException(ResponseCode.ILLEGAL_PARAMETER.getCode(), ResponseCode.ILLEGAL_PARAMETER.getInfo());
         }
-
-        // 5. 更新人群标签统计量
-        repository.updateCrowdTagsStatistics(tagId, userIdList.size());
+        if (!repository.lockTag(tagId)) {
+            throw invalidJob();
+        }
+        CrowdTagsJobEntity job = repository.queryCrowdTagsJobEntity(tagId, batchId);
+        if (job == null) {
+            throw invalidJob();
+        }
+        if (COMPLETED.equals(job.getStatus())) {
+            return;
+        }
+        if (!READY.equals(job.getStatus()) || !MANUAL_MEMBERSHIP.equals(job.getTagType())
+            || StringUtils.isBlank(job.getTagRule())) {
+            throw invalidJob();
+        }
+        List<String> members = new ArrayList<>();
+        for (String member : job.getTagRule().split(Constants.SPLIT, -1)) {
+            String userId = member.trim();
+            if (userId.isEmpty() || userId.codePointCount(0, userId.length()) > 128) {
+                throw invalidJob();
+            }
+            members.add(userId);
+        }
+        repository.addCrowdTagsUsers(tagId, members);
+        repository.updateCrowdTagsStatistics(tagId);
+        if (!repository.completeCrowdTagsJob(tagId, batchId)) {
+            throw invalidJob();
+        }
     }
 
+    private AppException invalidJob() {
+        return new AppException(ResponseCode.E0008.getCode(), ResponseCode.E0008.getInfo());
+    }
 }
