@@ -1,10 +1,13 @@
 package com.vvd.domain.activity.model.valobj;
 
+import com.vvd.types.common.Constants;
 import java.util.Date;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author hanjiazhi
@@ -77,6 +80,32 @@ public class GroupBuyActivityDiscountVO {
      * 人群标签规则范围
      */
     private String tagScope;
+
+    /**
+     * 可见限制 只要存在这样一个值，那么首次获得的默认值就是 false
+     */
+    public boolean isVisible() {
+        return !hasTagScope("1");
+    }
+
+    /**
+     * 参与限制 只要存在这样一个值，那么首次获得的默认值就是 false
+     */
+    public boolean isEnable() {
+        return !hasTagScope("2");
+    }
+
+    private boolean hasTagScope(String scope) {
+        if (StringUtils.isBlank(this.tagScope)) {
+            return false;
+        }
+        for (String s : this.tagScope.split(Constants.SPLIT)) {
+            if (Objects.equals(StringUtils.trim(s), scope)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     @Getter
     @Builder

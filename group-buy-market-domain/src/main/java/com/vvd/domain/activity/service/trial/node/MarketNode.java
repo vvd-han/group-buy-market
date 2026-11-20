@@ -52,6 +52,9 @@ public class MarketNode extends
     @Resource
     private ErrorNode errorNode;
 
+    @Resource
+    private TagNode tagNode;
+
     @Override
     protected void multiThread(MarketProductEntity requestParameter,
         DefaultActivityStrategyFactory.DynamicContext dynamicContext)
@@ -123,7 +126,7 @@ public class MarketNode extends
             return errorNode;
         }
 
-        return endNode;
+        return tagNode;
     }
 
 }
