@@ -34,7 +34,7 @@ public class ErrorNode extends
             throw new AppException(ResponseCode.E0002.getCode(), ResponseCode.E0002.getInfo());
         }
 
-        return TrialBalanceEntity.builder().build();
+        throw new AppException(ResponseCode.E0005.getCode(), ResponseCode.E0005.getInfo());
     }
 
     @Override

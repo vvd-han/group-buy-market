@@ -18,10 +18,17 @@
 
     <select id="queryCrowdTagsJob" parameterType="com.vvd.infrastructure.dao.po.CrowdTagsJob"
         resultMap="dataMap">
-        select tag_type, tag_rule, stat_start_time, stat_end_time
+        select tag_type, tag_rule, stat_start_time, stat_end_time, status
         from crowd_tags_job
         where tag_id = #{tagId}
           and batch_id = #{batchId}
+        for update
     </select>
+
+    <update id="completeCrowdTagsJob">
+        update crowd_tags_job
+        set status = 3
+        where tag_id = #{tagId} and batch_id = #{batchId} and status = 1
+    </update>
 
 </mapper>

@@ -11,6 +11,6 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface ISkuDao {
 
-    Sku querySkuByGoodsId(String goodsId);
+    Sku querySkuBySCGoodsId(Sku sku);
 
 }

@@ -3,7 +3,6 @@ package com.vvd.infrastructure.redis;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
-import org.redisson.api.RBitSet;
 import org.redisson.api.RBlockingQueue;
 import org.redisson.api.RBloomFilter;
 import org.redisson.api.RBucket;
@@ -190,10 +189,4 @@ public class RedissonService implements IRedisService {
     public Boolean setNx(String key, long expired, TimeUnit timeUnit) {
         return redissonClient.getBucket(key).trySet("lock", expired, timeUnit);
     }
-
-    @Override
-    public RBitSet getBitSet(String key) {
-        return redissonClient.getBitSet(key);
-    }
-
 }

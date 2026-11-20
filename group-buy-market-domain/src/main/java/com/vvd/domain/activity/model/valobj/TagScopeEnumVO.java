@@ -1,26 +1,33 @@
 package com.vvd.domain.activity.model.valobj;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.vvd.types.common.Constants;
+import com.vvd.types.enums.ResponseCode;
+import com.vvd.types.exception.AppException;
+import java.util.EnumSet;
+import org.apache.commons.lang3.StringUtils;
 
-/**
- * @author hanjiazhi
- * @description
- * @create 2026/11/20 15:42
- */
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
 public enum TagScopeEnumVO {
 
-    VISIBLE(true, false, "是否可看见拼团"),
-    ENABLE(true, false, "是否可参与拼团"),
-    ;
+    VISIBLE,
+    ENABLE;
 
-    private Boolean allow;
-    private Boolean refuse;
-    private String desc;
-
+    public static EnumSet<TagScopeEnumVO> parse(String scope) {
+        EnumSet<TagScopeEnumVO> scopes = EnumSet.noneOf(TagScopeEnumVO.class);
+        if (StringUtils.isBlank(scope)) {
+            return scopes;
+        }
+        for (String item : scope.split(Constants.SPLIT, -1)) {
+            switch (item.trim()) {
+                case "1":
+                    scopes.add(VISIBLE);
+                    break;
+                case "2":
+                    scopes.add(ENABLE);
+                    break;
+                default:
+                    throw new AppException(ResponseCode.E0007.getCode(), ResponseCode.E0007.getInfo());
+            }
+        }
+        return scopes;
+    }
 }

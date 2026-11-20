@@ -8,7 +8,7 @@ public interface IActivityRepository {
 
     GroupBuyActivityDiscountVO queryGroupBuyActivityDiscountVO(Long activityId);
 
-    SkuVO querySkuByGoodsId(String goodsId);
+    SkuVO querySkuBySCGoodsId(String source, String channel, String goodsId);
 
     SCSkuActivityVO querySCSkuActivityBySCGoodsId(String source, String channel, String goodsId);
 

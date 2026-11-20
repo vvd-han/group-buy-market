@@ -1,7 +1,7 @@
 package com.vvd.infrastructure.dao;
 
-import com.vvd.infrastructure.dao.po.CrowdTags;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * @author hanjiazhi
@@ -11,6 +11,8 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface ICrowdTagsDao {
 
-    void updateCrowdTagsStatistics(CrowdTags crowdTagsReq);
+    String lockTag(@Param("tagId") String tagId);
+
+    void updateCrowdTagsStatistics(@Param("tagId") String tagId);
 
 }
