@@ -14,6 +14,7 @@ import com.vvd.infrastructure.dao.po.GroupBuyActivity;
 import com.vvd.infrastructure.dao.po.GroupBuyDiscount;
 import com.vvd.infrastructure.dao.po.SCSkuActivity;
 import com.vvd.infrastructure.dao.po.Sku;
+import com.vvd.infrastructure.dcc.DCCService;
 import javax.annotation.Resource;
 import org.springframework.stereotype.Repository;
 
@@ -39,6 +40,9 @@ public class ActivityRepository implements IActivityRepository {
 
     @Resource
     private ICrowdTagsDetailDao crowdTagsDetailDao;
+
+    @Resource
+    private DCCService dccService;
 
     @Override
     public GroupBuyActivityDiscountVO queryGroupBuyActivityDiscountVO(Long activityId) {
@@ -117,6 +121,16 @@ public class ActivityRepository implements IActivityRepository {
     @Override
     public boolean isTagCrowdRange(String tagId, String userId) {
         return crowdTagsDetailDao.containsUser(tagId, userId);
+    }
+
+    @Override
+    public boolean downgradeSwitch() {
+        return dccService.isDowngradeSwitch();
+    }
+
+    @Override
+    public boolean cutRange(String userId) {
+        return dccService.isCutRange(userId);
     }
 
 }
