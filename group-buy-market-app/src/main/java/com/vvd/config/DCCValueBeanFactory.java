@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @Configuration
-public class DCCValudeBeanFactory implements BeanPostProcessor {
+public class DCCValueBeanFactory implements BeanPostProcessor {
 
     private static final String BASE_CONFIG_PATH = "group_buy_market_dcc_";
 
@@ -34,7 +34,7 @@ public class DCCValudeBeanFactory implements BeanPostProcessor {
 
     private final Map<String, Object> dccObjGroup = new HashMap<>();
 
-    public DCCValudeBeanFactory(RedissonClient redissonClient) {
+    public DCCValueBeanFactory(RedissonClient redissonClient) {
         this.redissonClient = redissonClient;
     }
 

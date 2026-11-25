@@ -1,6 +1,5 @@
 package com.vvd.api;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import com.vvd.api.response.Response;
 
 /**
@@ -10,7 +9,6 @@ import com.vvd.api.response.Response;
  */
 public interface IDCCService {
 
-
-    Response<Boolean> updateConfig(String key, String valude);
+    Response<Boolean> updateConfig(String key, String value);
 
 }
