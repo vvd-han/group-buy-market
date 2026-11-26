@@ -15,16 +15,17 @@ import org.springframework.stereotype.Service;
  * @create 2026/11/3 17:29
  */
 @Service
-public class IIndexGroupBuyMarketServiceImpl implements IIndexGroupBuyMarketService {
+public class IndexGroupBuyMarketServiceImpl implements IIndexGroupBuyMarketService {
 
     @Resource
     private DefaultActivityStrategyFactory defaultActivityStrategyFactory;
 
     @Override
     public TrialBalanceEntity indexMarketTrial(MarketProductEntity marketProductEntity) throws Exception {
+        // 获取执行策略
         StrategyHandler<MarketProductEntity, DefaultActivityStrategyFactory.DynamicContext, TrialBalanceEntity> strategyHandler = defaultActivityStrategyFactory.strategyHandler();
-        TrialBalanceEntity trialBalanceEntity = strategyHandler.apply(marketProductEntity, new DynamicContext());
-        return trialBalanceEntity;
+        // 受理试算操作
+        return strategyHandler.apply(marketProductEntity, new DefaultActivityStrategyFactory.DynamicContext());
     }
 
 }

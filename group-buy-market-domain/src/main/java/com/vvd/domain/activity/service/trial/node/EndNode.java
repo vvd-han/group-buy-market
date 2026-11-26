@@ -47,6 +47,7 @@ public class EndNode extends
             .endTime(groupBuyActivityDiscountVO.getEndTime())
             .isVisible(dynamicContext.isVisible())
             .isEnable(dynamicContext.isEnable())
+            .groupBuyActivityDiscountVO(groupBuyActivityDiscountVO)
             .build();
     }
 
