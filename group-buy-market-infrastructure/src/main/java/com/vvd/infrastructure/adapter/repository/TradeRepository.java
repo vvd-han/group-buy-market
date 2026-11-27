@@ -2,16 +2,21 @@ package com.vvd.infrastructure.adapter.repository;
 
 import com.vvd.domain.trade.adapter.repository.ITradeRepository;
 import com.vvd.domain.trade.model.aggregate.GroupBuyOrderAggregate;
+import com.vvd.domain.trade.model.entity.GroupBuyActivityEntity;
 import com.vvd.domain.trade.model.entity.MarketPayOrderEntity;
 import com.vvd.domain.trade.model.entity.PayActivityEntity;
 import com.vvd.domain.trade.model.entity.PayDiscountEntity;
 import com.vvd.domain.trade.model.entity.UserEntity;
 import com.vvd.domain.trade.model.valobj.GroupBuyProgressVO;
 import com.vvd.domain.trade.model.valobj.TradeOrderStatusEnumVO;
+import com.vvd.infrastructure.dao.IGroupBuyActivityDao;
 import com.vvd.infrastructure.dao.IGroupBuyOrderDao;
 import com.vvd.infrastructure.dao.IGroupBuyOrderListDao;
+import com.vvd.infrastructure.dao.po.GroupBuyActivity;
 import com.vvd.infrastructure.dao.po.GroupBuyOrder;
 import com.vvd.infrastructure.dao.po.GroupBuyOrderList;
+import com.vvd.types.common.Constants;
+import com.vvd.types.enums.ActivityStatusEnumVO;
 import com.vvd.types.enums.ResponseCode;
 import com.vvd.types.exception.AppException;
 import javax.annotation.Resource;
@@ -35,6 +40,10 @@ public class TradeRepository implements ITradeRepository {
     @Resource
     private IGroupBuyOrderListDao groupBuyOrderListDao;
 
+    @Resource
+    private IGroupBuyActivityDao groupBuyActivityDao;
+
+
     @Override
     public MarketPayOrderEntity queryMarketPayOrderEntityByOutTradeNo(String userId, String outTradeNo) {
         GroupBuyOrderList groupBuyOrderListReq = new GroupBuyOrderList();
@@ -57,6 +66,12 @@ public class TradeRepository implements ITradeRepository {
     @Transactional(timeout = 500)
     @Override
     public MarketPayOrderEntity lockMarketPayOrder(GroupBuyOrderAggregate groupBuyOrderAggregate) {
+        // 获取用户历史已参与次数，用于拼接本次订单的防刷唯一键 biz_id
+        Integer userTakeOrderCount = groupBuyOrderAggregate.getUserTakeOrderCount();
+        if (null == userTakeOrderCount) {
+            userTakeOrderCount = 0;
+        }
+
         // 聚合对象信息
         UserEntity userEntity = groupBuyOrderAggregate.getUserEntity();
         PayActivityEntity payActivityEntity = groupBuyOrderAggregate.getPayActivityEntity();
@@ -105,6 +120,8 @@ public class TradeRepository implements ITradeRepository {
             .deductionPrice(payDiscountEntity.getDeductionPrice())
             .status(TradeOrderStatusEnumVO.CREATE.getCode())
             .outTradeNo(payDiscountEntity.getOutTradeNo())
+            .bizId(payActivityEntity.getActivityId() + Constants.UNDERLINE + userEntity.getUserId()
+                + Constants.UNDERLINE + (userTakeOrderCount + 1))
             .build();
         try {
             // 写入拼团记录
@@ -133,6 +150,49 @@ public class TradeRepository implements ITradeRepository {
             .completeCount(groupBuyOrder.getCompleteCount())
             .lockCount(groupBuyOrder.getLockCount())
             .build();
+    }
+
+    /**
+     * 根据活动ID查询拼团活动实体，并将数据库的整型状态转换为领域状态枚举
+     *
+     * @param activityId 活动ID
+     * @return 拼团活动领域实体，查无记录时返回 null
+     */
+    @Override
+    public GroupBuyActivityEntity queryGroupBuyActivityEntityByActivityId(Long activityId) {
+        GroupBuyActivity groupBuyActivity = groupBuyActivityDao.queryGroupBuyActivityByActivityId(activityId);
+        if (null == groupBuyActivity) {
+            return null;
+        }
+        return GroupBuyActivityEntity.builder()
+            .activityId(groupBuyActivity.getActivityId())
+            .activityName(groupBuyActivity.getActivityName())
+            .discountId(groupBuyActivity.getDiscountId())
+            .groupType(groupBuyActivity.getGroupType())
+            .takeLimitCount(groupBuyActivity.getTakeLimitCount())
+            .target(groupBuyActivity.getTarget())
+            .validTime(groupBuyActivity.getValidTime())
+            .status(ActivityStatusEnumVO.valueOf(groupBuyActivity.getStatus()))
+            .startTime(groupBuyActivity.getStartTime())
+            .endTime(groupBuyActivity.getEndTime())
+            .tagId(groupBuyActivity.getTagId())
+            .tagScope(groupBuyActivity.getTagScope())
+            .build();
+    }
+
+    /**
+     * 统计指定用户在某个拼团活动下的已参与订单数
+     *
+     * @param activityId 活动ID
+     * @param userId     用户ID
+     * @return 用户已参与次数
+     */
+    @Override
+    public Integer queryOrderCountByActivityId(Long activityId, String userId) {
+        GroupBuyOrderList groupBuyOrderListReq = new GroupBuyOrderList();
+        groupBuyOrderListReq.setActivityId(activityId);
+        groupBuyOrderListReq.setUserId(userId);
+        return groupBuyOrderListDao.queryOrderCountByActivityId(groupBuyOrderListReq);
     }
 
 }

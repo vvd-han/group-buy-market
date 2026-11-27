@@ -16,4 +16,12 @@ public interface IGroupBuyActivityDao {
 
     GroupBuyActivity queryValidGroupBuyActivityId(Long activityId);
 
+    /**
+     * 根据活动ID查询拼团活动配置（不过滤状态，由领域层规则链做状态与有效期校验）
+     *
+     * @param activityId 活动ID
+     * @return 拼团活动持久化对象
+     */
+    GroupBuyActivity queryGroupBuyActivityByActivityId(Long activityId);
+
 }

@@ -75,6 +75,19 @@ public class GroupBuyOrderList {
      */
     private String outTradeNo;
     /**
+     * 实际支付金额
+     */
+    private BigDecimal payPrice;
+    /**
+     * 外部交易支付时间
+     */
+    private Date outTradeTime;
+    /**
+     * 业务唯一ID（activityId_userId_参与次数，用于数据库唯一索引防并发超限下单）
+     */
+    private String bizId;
+
+    /**
      * 创建时间
      */
     private Date createTime;

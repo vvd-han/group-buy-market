@@ -9,9 +9,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * @author Fuzhengwei bugstack.cn @小傅哥
+ * @author hanjiazhi
  * @description 拼团订单聚合对象；聚合可以理解用各个四肢、身体、头等组装出来一个人
- * @create 2025-01-11 10:07
+ * @create 2026-11-11 10:07
  */
 @Data
 @Builder
@@ -31,5 +31,9 @@ public class GroupBuyOrderAggregate {
      * 支付优惠实体对象
      */
     private PayDiscountEntity payDiscountEntity;
+    /**
+     * 用户已参与拼团量
+     */
+    private Integer userTakeOrderCount;
 
 }
